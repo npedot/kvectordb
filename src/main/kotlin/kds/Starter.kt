@@ -15,7 +15,7 @@ fun main() {
         .build()
 
     val lineReader = LineReaderBuilder.builder()
-        .completer(StringsCompleter(listOf("/hello", "/quit", "/documents", "/insert", "/search")))
+        .completer(StringsCompleter(listOf("/hello", "/quit", "/documents", "/insert", "/search", "/vector")))
         .terminal(terminal)
         .appName(APP_NAME)
         .build()
@@ -25,6 +25,8 @@ fun main() {
     // /insert doc6 This is a new document
     // To search documents with query "semantic search", type:
     // /search semantic search
+    // To calculate the vector embedding of a text, type:
+    // /vector <text>
 
     while (true) {
         try {
@@ -58,6 +60,12 @@ fun main() {
                         println("${index + 1}. [ID: ${document.id}, Score: ${String.format("%.4f", score)}] ${document.text}")
                     }
                 }
+            } else if (line.startsWith("/vector")) {
+                val text = line.substringAfter("/vector").trim()
+                val embeddingService = EmbeddingService()
+                val vector = embeddingService.textToVector(text)
+                println("Vector embedding for text: $text")
+                println(vector.contentToString())
             } else {
                 println("Unknown command: $line")
             }
