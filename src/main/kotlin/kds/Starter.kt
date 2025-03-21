@@ -60,12 +60,32 @@ fun main() {
                         println("${index + 1}. [ID: ${document.id}, Score: ${String.format("%.4f", score)}] ${document.text}")
                     }
                 }
+            } else if (line.startsWith("/search")) {
+                val query = line.substringAfter("/search").trim()
+                if (query.isEmpty()) {
+                    println("Usage: /search <query>")
+                }
+                else {
+                    val results = db.search(query)
+                    if (results.isEmpty()) {
+                        println("No results found for query: $query")
+                    } else {
+                        println("Search results for query: $query")
+                        results.forEachIndexed { index, (document, score) ->
+                            println("${index + 1}. [ID: ${document.id}, Score: ${String.format("%.4f", score)}] ${document.text}")
+                        }
+                    }
+                }
             } else if (line.startsWith("/vector")) {
                 val text = line.substringAfter("/vector").trim()
-                val embeddingService = EmbeddingService()
-                val vector = embeddingService.textToVector(text)
-                println("Vector embedding for text: $text")
-                println(vector.contentToString())
+                if (text.isEmpty()) {
+                    println("Usage: /vector <text>")
+                } else {
+                    val embeddingService = EmbeddingService()
+                    val vector = embeddingService.textToVector(text)
+                    println("Vector embedding for text: $text")
+                    println(vector.contentToString())
+                }
             } else {
                 println("Unknown command: $line")
             }
